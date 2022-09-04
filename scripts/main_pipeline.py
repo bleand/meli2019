@@ -32,7 +32,7 @@ calc_labels = True
 fresh_start = True
 
 if clean_tset:
-    tset = pd.read_csv('./../data/train.csv')
+    tset = pd.read_csv('./../data/train.csv.gz', compression='gzip')
 
     if SAMPLE:
         tset = tset.head(200000)
