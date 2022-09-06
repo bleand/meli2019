@@ -228,6 +228,7 @@ def pipeline(args):
             logger.info(f"Test BACC: {bacc}")
 
             output_csv(yt, outputs, test_df['title'].values, test_df['sentences_padded'].values, language=language,
+                       path=path,
                        bacc=bacc)
 
             # In order to save memory, unnecessary objects are dropped
@@ -266,4 +267,5 @@ def pipeline(args):
             logger.info(f"Test BACC: {bacc}")
 
             output_csv(yt, outputs, test_df['title'].values, test_df['sentences_padded'].values, language=language,
+                       path= path,
                        bacc=bacc)

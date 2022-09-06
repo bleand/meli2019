@@ -72,8 +72,8 @@ def get_youngest_file(files):
     return get_oldest_file(files, _invert=True)
 
 def output_csv(y_true,y_pred,  orig_test, pad_test, language='spanish', path='', bacc = 0):
-    levels = joblib.load(language + '/levels')
-    csv_file = open(language+'/Output_CNN_' + str(language) + '.csv', 'w', newline='', encoding='utf-8')
+    levels = joblib.load(os.path.join(path + 'levels'))
+    csv_file = open(os.path.join(path, f'output_CNN_{language}.csv'), 'w', newline='', encoding='utf-8')
     writer = csv.writer(csv_file)
     writer.writerow(
         ['Original','Padded','Human', 'Pred', 'Prob', 'BACC'])
@@ -91,6 +91,6 @@ def output_csv(y_true,y_pred,  orig_test, pad_test, language='spanish', path='',
             writer.writerow([o,p,levels[np.argmax(y)], levels[np.argmax(h)], h[np.argmax(h)]])
     report = classification_report(cat_true, cat_pred, output_dict=True)
     df = pd.DataFrame(report)
-    df.to_csv(language+'/Report.csv')
+    df.to_csv(os.path.join(path,'report.csv'))
 
     csv_file.close()
