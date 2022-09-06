@@ -10,11 +10,14 @@ from sklearn.metrics import classification_report
 import numpy as np
 import pandas as pd
 
+import logging
+logger = logging.getLogger(__name__)
+
 matplotlib.use('pdf')
 plt.style.use('ggplot')
 
 
-def plot_history(history, pref=None):
+def plot_history(history, pref=None, path=''):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
@@ -33,9 +36,13 @@ def plot_history(history, pref=None):
     plt.title('Training and validation loss')
     plt.legend()
     if pref is not None:
-        plt.savefig(str(pref) + '_foo.png')
+        plt_path = os.path.join(path, f"{pref}_history.png")
     else:
-        plt.savefig('foo.png')
+        plt_path = os.path.join(path, f"history.png")
+
+    logger.info(f"Saving plot to: {plt_path}")
+    plt.savefig(plt_path)
+
 
 def get_oldest_file(files, _invert=False):
     """ Find and return the oldest file of input file names.

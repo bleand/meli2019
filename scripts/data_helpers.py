@@ -16,6 +16,9 @@ from nltk.stem import SnowballStemmer
 from tqdm.auto import tqdm
 from statics import *
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def indices_to_one_hot(data, nb_classes):
     """Convert an iterable of indices to one-hot encoded labels."""
@@ -40,14 +43,16 @@ def load_data(df, path='', reliable=False, lang=''):
         len_sent = len(each)
         break
 
-    print('Building input data')
+    logger.info("Building input data.")
     df = build_input_data(df, path=path)
 
     return df, len_sent
 
 
 def load_data_and_labels(df, path='', reliable=False, lang=''):
-    print('Grabbing sentences...')
+
+    logger.info(f"Splitting sentences into words.")
+
     sentences = df['clean_title'].astype(str)
     labels = df['category']
 
@@ -55,45 +60,45 @@ def load_data_and_labels(df, path='', reliable=False, lang=''):
 
     x_text = [s.split(" ") for s in x_text]
 
-    print('Bigrams...')
+    # Bigrams
+    bigrams_path = os.path.join(path, 'bigrams')
     if reliable:
-        bigram = SaveLoad.load(path + '/bigrams')
+        logger.info(f"Loading bigrams from {bigrams_path}.")
+        bigram = SaveLoad.load(bigrams_path)
     else:
+        logger.info(f"Calculating bigrams and saving them in {bigrams_path}.")
         bigram = Phraser(Phrases(x_text, min_count=100, threshold=20))
-        bigram.save(path + '/bigrams')
-    x_text_aux = x_text
+        bigram.save(bigrams_path)
 
-    x_text = []
-    print("Creating bi-grams")
+    logger.info(f"Applying bigrams.")
+    x_text = [bigram[text] for text in tqdm(x_text)]
 
-    pbar = tqdm(total=len(x_text_aux))
-    for text in x_text_aux:
-        x_text.append(bigram[text])
-        pbar.update()
-    pbar.close()
-
-    print('Removing stopwords...')
-
+    logger.info(f"Removing stopwords.")
     x_text = remove_stopwords(x_text, lang=lang)
 
     """
-    print('Stemming...')
+    logger.info(f"Stemming.")
     x_text = text_stemming(x_text, lang='spanish')
     """
 
-    print('Padding sentences...')
+    logger.info(f"Padding sentences.")
     if reliable:
         len_sent = joblib.load(path + '/len_sent_' + lang[0:3] + '.h5')
         x_text = pad_sentences(x_text, len_sent=len_sent)
     else:
         x_text = pad_sentences(x_text)
 
-    print("Word 2 Vec")
+    logger.info(f"Word2Vec.")
     if not reliable:
         model = Word2Vec(sentences=x_text, vector_size=EMBEDDING_DIM, sg=1, window=7, min_count=20, seed=42, workers=8)
         weights = model.wv.vectors
 
-        np.save(open(path + '/embeddings.npz', 'wb'), weights)
+        embeddings_path = os.path.join(path, 'embeddings.npz')
+        logger.info(f"Saving embeddings to {embeddings_path}.")
+        np.save(embeddings_path, weights)
+
+        vocab_path = os.path.join(path, 'map.json')
+        logger.info(f"Saving vocab to {vocab_path}.")
         vocab = model.wv.key_to_index
         print(path)
         print(os.path.join(path, 'map.json'))

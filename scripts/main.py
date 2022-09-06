@@ -1,5 +1,15 @@
 from pipeline import pipeline
 import argparse
+import logging
+import sys
+
+logger = logging.getLogger('root')
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.INFO,
+                    format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
+logger.setLevel('DEBUG')
+logger.error(f"Setting log level to {logger.level}")
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
