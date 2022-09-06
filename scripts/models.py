@@ -9,7 +9,8 @@ from tensorflow.keras.models import Model
 from statics import *
 
 def cnn_model(input_dim, output_shape, path=''):
-    weights = np.load(open(os.path.join(path, 'embeddings.npz'), 'rb'))
+    embeddings_path = os.path.join(path, 'embeddings.npy')
+    weights = np.load(embeddings_path)
     embedding_dim = weights.shape[1]
 
     inputs = Input(shape=(input_dim,), dtype='int32')

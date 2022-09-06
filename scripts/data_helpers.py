@@ -87,7 +87,7 @@ def load_data_and_labels(df, path='', reliable=False, lang=''):
         model = Word2Vec(sentences=x_text, vector_size=EMBEDDING_DIM, sg=1, window=7, min_count=20, seed=42, workers=8)
         weights = model.wv.vectors
 
-        embeddings_path = os.path.join(path, 'embeddings.npz')
+        embeddings_path = os.path.join(path, 'embeddings')
         logger.info(f"Saving embeddings to {embeddings_path}.")
         np.save(embeddings_path, weights)
 
