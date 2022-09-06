@@ -68,8 +68,10 @@ def get_oldest_file(files, _invert=False):
     # Return just the name of oldest file.
     return oldest[0]
 
+
 def get_youngest_file(files):
     return get_oldest_file(files, _invert=True)
+
 
 def output_csv(y_true,y_pred,  orig_test, pad_test, language='spanish', path='', bacc = 0):
     levels = joblib.load(os.path.join(path + 'levels'))
@@ -77,7 +79,7 @@ def output_csv(y_true,y_pred,  orig_test, pad_test, language='spanish', path='',
     writer = csv.writer(csv_file)
     writer.writerow(
         ['Original','Padded','Human', 'Pred', 'Prob', 'BACC'])
-    ix = 0
+
     cat_true = []
     cat_pred = []
     first = 0
