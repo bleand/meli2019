@@ -35,6 +35,7 @@ def plot_history(history, pref=None, path=''):
     plt.plot(x, val_loss, 'r', label='Validation loss')
     plt.title('Training and validation loss')
     plt.legend()
+
     if pref is not None:
         plt_path = os.path.join(path, f"{pref}_history.png")
     else:

@@ -31,11 +31,7 @@ def load_data(df, path='', reliable=False, lang=''):
     Loads and preprocessed data for the dataset.
     Returns input vectors, labels, vocabulary, and inverse vocabulary.
     """
-    # Load and preprocess data
-    # if os.path.isdir(path) == False:
-    #     os.makedirs(path)
 
-    print(path)
     df = load_data_and_labels(df, path=path, reliable=reliable, lang=lang)
 
     len_sent = 0
@@ -55,9 +51,7 @@ def load_data_and_labels(df, path='', reliable=False, lang=''):
 
     sentences = df['clean_title'].astype(str)
     labels = df['category']
-
     x_text = sentences
-
     x_text = [s.split(" ") for s in x_text]
 
     # Bigrams
@@ -83,7 +77,7 @@ def load_data_and_labels(df, path='', reliable=False, lang=''):
 
     logger.info(f"Padding sentences.")
     if reliable:
-        len_sent = joblib.load(path + '/len_sent_' + lang[0:3] + '.h5')
+        len_sent = joblib.load(os.path.join(path, f'len_sent_{lang[0:3]}.h5'))
         x_text = pad_sentences(x_text, len_sent=len_sent)
     else:
         x_text = pad_sentences(x_text)
@@ -100,34 +94,37 @@ def load_data_and_labels(df, path='', reliable=False, lang=''):
         vocab_path = os.path.join(path, 'map.json')
         logger.info(f"Saving vocab to {vocab_path}.")
         vocab = model.wv.key_to_index
-        print(path)
-        print(os.path.join(path, 'map.json'))
         with open(os.path.join(path, 'map.json'), 'w') as f:
             f.write(json.dumps(vocab))
 
     df['sentences_padded'] = x_text
+
     return df
+
 
 def build_input_data(df, path=''):
     """
     Maps sentences and labels to vectors based on a vocabulary.
     """
-    word2idx, idx2word = load_vocab(vocab_path='/map.json', path=path)
-    df['input_data'] = df.apply(lambda x : np.array([word2idx[word] if word in word2idx.keys() else
+
+    word2idx, idx2word = load_vocab(vocab_path='map.json', path=path)
+    df['input_data'] = df.progress_apply(lambda x : np.array([word2idx[word] if word in word2idx.keys() else
                                                      word2idx["<PAD/>"] for word in x['sentences_padded']],
                                                     dtype=np.int32), axis=1)
     return df
 
 
 def remove_stopwords(sentences, lang='english'):
+
     try:
         stpwrds = stopwords.words(lang)
     except Exception:
         stpwrds = stopwords.words('spanish')
 
-    out_sentences = [[w for w in sentence if w not in stpwrds] for sentence in sentences]
+    out_sentences = [[w for w in sentence if w not in stpwrds] for sentence in tqdm(sentences)]
 
     return out_sentences
+
 
 def pad_sentences(sentences, padding_word="<PAD/>", len_sent = None):
     """
@@ -139,7 +136,7 @@ def pad_sentences(sentences, padding_word="<PAD/>", len_sent = None):
     else:
         sequence_length = len_sent
     padded_sentences = []
-    for i in range(len(sentences)):
+    for i in tqdm(range(len(sentences))):
         sentence = sentences[i]
         num_padding = sequence_length - len(sentence)
         if num_padding >= 0:
@@ -149,14 +146,15 @@ def pad_sentences(sentences, padding_word="<PAD/>", len_sent = None):
         padded_sentences.append(new_sentence)
     return padded_sentences
 
-def load_vocab(vocab_path='/map.json', path=''):
+
+def load_vocab(vocab_path='map.json', path=''):
     """
     Load word -> index and index -> word mappings
     :param vocab_path: where the word-index map is saved
     :return: word2idx, idx2word
     """
 
-    with open(path+vocab_path, 'r') as f:
+    with open(os.path.join(path, vocab_path), 'r') as f:
         data = json.loads(f.read())
     word2idx = data
     idx2word = dict([(v, k) for k, v in data.items()])
@@ -279,11 +277,12 @@ def clean_str(string):
 
 
 def text_stemming(sentences, lang='english'):
+
     try:
         stemmer = SnowballStemmer(lang)
     except Exception:
         stemmer = SnowballStemmer('spanish')
 
-    out_text = [[stemmer.stem(i) for i in text] for text in sentences]
+    out_text = [[stemmer.stem(i) for i in text] for text in tqdm(sentences)]
 
     return out_text
