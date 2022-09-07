@@ -2,6 +2,7 @@ import pandas as pd
 from data_helpers import clean_str, load_data, indices_to_one_hot
 from utils import plot_history, output_csv
 import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 import joblib
