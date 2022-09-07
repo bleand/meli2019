@@ -3,6 +3,9 @@ import argparse
 import logging
 import sys
 
+
+logging.getLogger('gensim').setLevel(logging.FATAL)
+
 logger = logging.getLogger('root')
 logging.basicConfig(stream=sys.stdout,
                     level=logging.INFO,
