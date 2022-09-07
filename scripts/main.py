@@ -22,8 +22,8 @@ def main():
     parser.add_argument('--train', action='store_true')
     parser.add_argument('--calc-labels', action='store_true')
     parser.add_argument('--fresh-start', action='store_true')
-    parser.add_argument('--multi-gpu', action='store_true')
     parser.add_argument('--sample', action='store_true')
+    parser.add_argument('--multi-gpu', action='store_true')
 
     args = parser.parse_args()
     pipeline(args)
