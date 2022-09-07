@@ -219,7 +219,9 @@ def pipeline(args):
 
             logger.info(f"Generating test predictions")
             xt = np.stack(test_df['input_data'])
-            outputs = model.predict(xt)
+            outputs = [item for sublist in
+                       [model.predict(minibatch, batch_size=batch_size) for minibatch in tqdm(np.array_split(xt, 10))]
+                       for item in sublist]
 
             logger.info(f"Calculating metrics.")
             yt = [np.where(levels == i)[0][0] for i in test_df['category']]
@@ -258,7 +260,9 @@ def pipeline(args):
 
             logger.info(f"Generating test predictions")
             xt = np.stack(test_df['input_data'])
-            outputs = model.predict(xt)
+            outputs = [item for sublist in
+                       [model.predict(minibatch, batch_size=batch_size) for minibatch in tqdm(np.array_split(xt, 10))]
+                       for item in sublist]
 
             logger.info(f"Calculating metrics.")
             yt = [np.where(levels == i)[0][0] for i in test_df['category']]
