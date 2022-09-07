@@ -47,4 +47,19 @@ The scripted version is designed to train on the entire dataset. One model per l
 
 It will also save the data in multiple steps to make a re-run easier.
 
- 
+To execute the pipeline, run `main.py` from `scripts` with the desired flags:
+
+| flag | description |
+|----- | ----------- |
+| --clean-tset | Loads raw data from `RAW_TRAIN` and starts from scratch. Useful when title cleaning changed. |
+| --create-tset | Re-creates the training set pickles. Useful when pre-processing changed. |
+| --train | Trains the models. If not present, loads the model un runs prediction on test data set. |
+| --calc-labels | Re-calculates one-hot indices. Useful when data structure changed (i.e., subsample). |
+| --fresh-start | Creates a new model from scratch. If not present, loads the model and continues training. |
+| --sample | Runs in `1%` of the data. Useful to test the code  |
+| --multi-gpu | Runs `tensorflow` as a parallel model using 2 GPUs |
+
+In order to test the code on a fresh start, run the following line.
+```commandline
+python .\main.py --clean-tset --create-tset --train --calc-labels --fresh-start --sample
+```
