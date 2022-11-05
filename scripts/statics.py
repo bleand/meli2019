@@ -5,5 +5,5 @@ num_filters = 200
 
 output_dim = 2000
 batch_size = 512
-nb_epoch = 50
+nb_epoch = 5
 drop = 0.5

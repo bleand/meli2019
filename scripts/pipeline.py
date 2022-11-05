@@ -12,12 +12,17 @@ from sklearn.utils import class_weight
 from sklearn.metrics import balanced_accuracy_score
 import gc
 from models import cnn_model
+# import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import load_model
 from statics import *
 from tqdm.auto import tqdm
 import logging
+
+# tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+# tf.get_logger().setLevel('ERROR')
+# logging.getLogger('tensorflow').setLevel(logging.FATAL)
 
 tqdm.pandas()
 
